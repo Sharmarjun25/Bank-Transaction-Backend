@@ -15,6 +15,6 @@ const router = express.Router();
 router.post("/", authMiddleware.authMiddleware, AccountController.createAccountController)
 
 
-
+router.get("/", authMiddleware.authMiddleware, AccountController.getUserAccountsController)
 
 module.exports = router;

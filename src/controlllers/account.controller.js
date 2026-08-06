@@ -15,7 +15,15 @@ async function createAccountController(req, res) {
 //ek user ki id ke saath account create karo
 //and response pe send krdo bus itna kaam hai
 
+async function getUserAccountsController(req, res) {
+    const accounts = await accountModel.find({ user: req.user._id });
+
+    res.status(200).json({
+        accounts
+    })
+}
+
 module.exports = {
-    createAccountController
+    createAccountController, getUserAccountsController
 }
 
