@@ -165,7 +165,7 @@ async function createInitialFundsTransaction(req, res) {
     const session = await mongoose.startSession()
     session.startTransaction()
 
-    const transaction = new transactionModel.create({
+    const transaction = new transactionModel({
         fromAccount: fromUserAccount._id,
         toAccount,
         amount,
@@ -181,6 +181,11 @@ async function createInitialFundsTransaction(req, res) {
         type: "DEBIT"
     }], { session })
 
+    await (() => {
+        return new Promise((resolve) => setTimeout(resolve, 100 * 1000))
+
+    })()
+
     const creditLedgerEntry = await ledgerModel.create([{
         account: toAccount,
         amount: amount,
@@ -193,6 +198,9 @@ async function createInitialFundsTransaction(req, res) {
 
     await session.commitTransaction()
     session.endSession()
+
+
+    //await emailService.sendtransactionEmail(req.user.email , req)
 
     return res.status(201).json({
         message: "Initial funds transaction completed successfully",
