@@ -14,7 +14,7 @@ async function createTransaction(req, res) {
     if (!fromAccount || !toAccount || !amount || !idempotencyKey) {
         //400 is send when there is a mistake from a client side and server 
         //cannot process it 
-        res.status(400).json({
+        return res.status(400).json({
             message: "FromAccount , toAccount , amount and idompotency key are required"
 
         })
@@ -79,7 +79,7 @@ async function createTransaction(req, res) {
     const balance = await fromUserAccount.getBalance()
 
     if (balance < amount) {
-        res.status(400).json({
+        return res.status(400).json({
             message: `Insufficient balance . Current balance is ${balance}.
             Requested amount is ${amount}`
         })
@@ -100,7 +100,7 @@ async function createTransaction(req, res) {
         account: fromAccount,
         amount: amount,
         transaction: transaction._id,
-        type: "CREDIT"
+        type: "DEBIT"
 
 
     }, { session })
@@ -122,12 +122,14 @@ async function createTransaction(req, res) {
     session.endSession()
 
 
-    //send email notification now
-    await emailService.sendtransactionEmail(req.user.email, req.user.name, amount, toAccount);
-    return res.status(201).json({
+    //send email notification now (after response — so email failure doesn't crash the API)
+    res.status(201).json({
         message: "Transaction completed successfully",
         transaction: transaction
     })
+
+    emailService.sendtransactionEmail(req.user.email, req.user.name, amount, toAccount)
+        .catch(err => console.error("Email failed:", err));
 
 
 
@@ -181,10 +183,10 @@ async function createInitialFundsTransaction(req, res) {
         type: "DEBIT"
     }], { session })
 
-    await (() => {
+    /*await (() => {
         return new Promise((resolve) => setTimeout(resolve, 100 * 1000))
 
-    })()
+    })()*/
 
     const creditLedgerEntry = await ledgerModel.create([{
         account: toAccount,

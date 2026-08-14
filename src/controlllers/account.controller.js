@@ -37,7 +37,7 @@ async function getAccountBalanceController(req, res) {
         })
     }
 
-    const balance = await account.getbalance();
+    const balance = await account.getBalance();
     res.status(200).json({
         accountId: account._id,
         balance: balance
