@@ -1,47 +1,82 @@
 const accountModel = require("../models/account.model");
 
 async function createAccountController(req, res) {
-    const user = req.user;
+
+    try {
+
+        const user = req.user;
 
 
-    const account = await accountModel.create({
-        user: user._id
-    })
-    res.status(201).json({
-        account
-    })
+        const account = await accountModel.create({
+            user: user._id
+        })
+        res.status(201).json({
+            account
+        })
+
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+
 
 }
 //ek user ki id ke saath account create karo
 //and response pe send krdo bus itna kaam hai
 
 async function getUserAccountsController(req, res) {
-    const accounts = await accountModel.find({ user: req.user._id });
 
-    res.status(200).json({
-        accounts
-    })
-}
+    try {
 
-async function getAccountBalanceController(req, res) {
-    const { accountId } = req.params;
+        const accounts = await accountModel.find({ user: req.user._id });
 
-    const account = await accountModel.findOne({
-        _id: accountId,
-        user: req.user._id
-    })
+        res.status(200).json({
+            accounts
+        })
 
-    if (!account) {
-        return res.status(404).json({
-            message: "Account not found"
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            message: "Internal server error"
         })
     }
 
-    const balance = await account.getBalance();
-    res.status(200).json({
-        accountId: account._id,
-        balance: balance
-    })
+
+}
+
+async function getAccountBalanceController(req, res) {
+
+    try {
+
+        const { accountId } = req.params;
+
+        const account = await accountModel.findOne({
+            _id: accountId,
+            user: req.user._id
+        })
+
+        if (!account) {
+            return res.status(404).json({
+                message: "Account not found"
+            })
+        }
+
+        const balance = await account.getBalance(); // balance X Balance V
+        res.status(200).json({
+            accountId: account._id,
+            balance: balance
+        })
+
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+
+
 
 }
 
