@@ -13,6 +13,19 @@ app.use(express.json())
 // Middleware to parse cookies
 app.use(cookieParser())
 
+// Health check route
+app.get("/", (req, res) => {
+    res.status(200).json({
+        message: "Backend Ledger API is running",
+        version: "1.0.0",
+        endpoints: {
+            auth: "/api/auth",
+            accounts: "/api/accounts",
+            transactions: "/api/transactions"
+        }
+    })
+})
+
 // Mount the auth routes
 app.use('/api/auth', authRoutes)
 app.use("/api/accounts", accountRouter)
