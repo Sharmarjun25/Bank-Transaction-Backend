@@ -17,7 +17,7 @@ app.use(cookieParser())
 app.get("/", (req, res) => {
     res.status(200).json({
         message: "Backend Ledger API is running",
-        version: "1.0.0",
+        //version: "1.0.0",
         endpoints: {
             auth: "/api/auth",
             accounts: "/api/accounts",
